@@ -673,6 +673,56 @@ function update(time = 0) {
 
 
 // ==========================
+// LOOP DO JOGO
+// ==========================
+
+function update(time = 0) {
+
+  const deltaTime = time - lastTime;
+
+  lastTime = time;
+
+  dropCounter += deltaTime;
+
+  if (
+    !gameOver &&
+    dropCounter > dropInterval
+  ) {
+    playerDrop();
+  }
+
+  draw();
+
+  requestAnimationFrame(update);
+}
+
+
+// ==========================
+// LOOP DO JOGO
+// ==========================
+
+function update(time = 0) {
+
+  const deltaTime = time - lastTime;
+
+  lastTime = time;
+
+  dropCounter += deltaTime;
+
+  if (
+    !gameOver &&
+    dropCounter > dropInterval
+  ) {
+    playerDrop();
+  }
+
+  draw();
+
+  requestAnimationFrame(update);
+}
+
+
+// ==========================
 // INICIAR
 // ==========================
 

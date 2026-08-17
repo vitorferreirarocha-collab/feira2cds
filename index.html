@@ -12,9 +12,17 @@
 
   <div class="game">
 
-    <canvas id="tetris" width="300" height="600"></canvas>
+    <div>
+      <canvas id="tetris" width="300" height="600"></canvas>
+
+      <div class="player-form">
+        <input type="text" id="playerName" placeholder="Seu nome">
+        <input type="text" id="playerClass" placeholder="Sua turma">
+      </div>
+    </div>
 
     <div class="side">
+
       <h1>TETRIS</h1>
 
       <div class="info">
@@ -23,7 +31,13 @@
         <p>Nível: <strong id="level">1</strong></p>
       </div>
 
-      <button onclick="restartGame()">Reiniciar</button>
+      <button onclick="restartGame()">
+        Reiniciar
+      </button>
+
+      <button onclick="toggleMusic()" class="music-button">
+        🎵 Música: <span id="musicStatus">OFF</span>
+      </button>
 
       <div class="controls">
         ← → &nbsp; Mover<br>
@@ -31,9 +45,23 @@
         ↑ &nbsp; Girar<br>
         Espaço &nbsp; Queda rápida
       </div>
+
+      <div class="ranking">
+
+        <h2>🏆 Ranking</h2>
+
+        <ol id="rankingList"></ol>
+
+      </div>
+
     </div>
 
   </div>
+
+  <!-- Música -->
+  <audio id="arcadeMusic" loop>
+    <source src="arcade.mp3" type="audio/mpeg">
+  </audio>
 
   <script src="script.js"></script>
 

@@ -88,12 +88,13 @@ function resetPlayer() {
     Math.floor(COLS / 2) -
     Math.floor(player.matrix[0].length / 2);
 
-  if (collide()) {
+if (collide()) {
 
-    gameOver = true;
+  gameOver = true;
 
-    alert("Game Over! Pontuação: " + score);
-  }
+  saveScore();
+
+  alert("Game Over! Pontuação: " + score);
 }
 
 
@@ -477,3 +478,105 @@ document.addEventListener(
 restartGame();
 
 update();
+// ================================
+// SISTEMA DE RANKING
+// ================================
+
+function saveScore() {
+
+  const name =
+    document.getElementById("playerName").value.trim();
+
+  const playerClass =
+    document.getElementById("playerClass").value.trim();
+
+  if (name === "" || playerClass === "") {
+    alert("Digite seu nome e sua turma!");
+    return;
+  }
+
+  let ranking =
+    JSON.parse(localStorage.getItem("tetrisRanking")) || [];
+
+  ranking.push({
+    name: name,
+    playerClass: playerClass,
+    score: score
+  });
+
+  ranking.sort((a, b) => b.score - a.score);
+
+  ranking =
+    ranking.slice(0, 10);
+
+  localStorage.setItem(
+    "tetrisRanking",
+    JSON.stringify(ranking)
+  );
+
+  updateRanking();
+}
+
+
+// ================================
+// MOSTRAR RANKING
+// ================================
+
+function updateRanking() {
+
+  const rankingList =
+    document.getElementById("rankingList");
+
+  rankingList.innerHTML = "";
+
+  let ranking =
+    JSON.parse(localStorage.getItem("tetrisRanking")) || [];
+
+  ranking.forEach((player, index) => {
+
+    const li =
+      document.createElement("li");
+
+    li.innerHTML =
+      `<strong>${index + 1}º</strong> 
+       ${player.name} - ${player.playerClass}
+       <br>
+       🎯 ${player.score} pontos`;
+
+    rankingList.appendChild(li);
+  });
+}
+
+
+// Atualiza o ranking ao abrir o jogo
+updateRanking();
+// ================================
+// MÚSICA
+// ================================
+
+const music =
+  document.getElementById("arcadeMusic");
+
+let musicPlaying = false;
+
+function toggleMusic() {
+
+  if (musicPlaying) {
+
+    music.pause();
+
+    musicPlaying = false;
+
+    document.getElementById("musicStatus")
+      .textContent = "OFF";
+
+  } else {
+
+    music.play();
+
+    musicPlaying = true;
+
+    document.getElementById("musicStatus")
+      .textContent = "ON";
+  }
+}

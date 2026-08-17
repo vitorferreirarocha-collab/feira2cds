@@ -19,29 +19,33 @@ const colors = [
 ];
 
 const pieces = [
-  [
-    [1, 1, 1, 1]
-  ],
+  [[1, 1, 1, 1]],
+
   [
     [2, 0, 0],
     [2, 2, 2]
   ],
+
   [
     [0, 0, 3],
     [3, 3, 3]
   ],
+
   [
     [4, 4],
     [4, 4]
   ],
+
   [
     [0, 5, 5],
     [5, 5, 0]
   ],
+
   [
     [0, 6, 0],
     [6, 6, 6]
   ],
+
   [
     [7, 7, 0],
     [0, 7, 7]
@@ -57,18 +61,16 @@ let level = 1;
 
 let dropCounter = 0;
 let lastTime = 0;
+let dropInterval = 1000;
 
 let gameOver = false;
 
-let dropInterval = 1000;
 
-
-// =================================
+// ==========================
 // TABULEIRO
-// =================================
+// ==========================
 
 function createBoard() {
-
   return Array.from(
     { length: ROWS },
     () => Array(COLS).fill(0)
@@ -76,12 +78,11 @@ function createBoard() {
 }
 
 
-// =================================
+// ==========================
 // CRIAR PEÇA
-// =================================
+// ==========================
 
 function createPiece() {
-
   const piece =
     pieces[Math.floor(Math.random() * pieces.length)];
 
@@ -89,9 +90,50 @@ function createPiece() {
 }
 
 
-// =================================
-// RESETAR JOGADOR
-// =================================
+// ==========================
+// COLISÃO
+// ==========================
+
+function collide() {
+
+  const m = player.matrix;
+  const o = player.pos;
+
+  for (let y = 0; y < m.length; y++) {
+
+    for (let x = 0; x < m[y].length; x++) {
+
+      if (m[y][x] === 0) {
+        continue;
+      }
+
+      const newX = x + o.x;
+      const newY = y + o.y;
+
+      if (newX < 0 || newX >= COLS) {
+        return true;
+      }
+
+      if (newY >= ROWS) {
+        return true;
+      }
+
+      if (
+        newY >= 0 &&
+        board[newY][newX] !== 0
+      ) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+
+// ==========================
+// NOVA PEÇA
+// ==========================
 
 function resetPlayer() {
 
@@ -116,9 +158,9 @@ function resetPlayer() {
 }
 
 
-// =================================
-// DESENHAR
-// =================================
+// ==========================
+// DESENHAR MATRIZ
+// ==========================
 
 function drawMatrix(matrix, offset) {
 
@@ -147,16 +189,14 @@ function drawMatrix(matrix, offset) {
           1
         );
       }
-
     });
-
   });
 }
 
 
-// =================================
+// ==========================
 // DESENHAR JOGO
-// =================================
+// ==========================
 
 function draw() {
 
@@ -181,49 +221,9 @@ function draw() {
 }
 
 
-// =================================
-// COLISÃO
-// =================================
-
-function collide() {
-
-  const m = player.matrix;
-  const o = player.pos;
-
-  for (let y = 0; y < m.length; y++) {
-
-    for (let x = 0; x < m[y].length; x++) {
-
-      if (m[y][x] !== 0) {
-
-        const newX = x + o.x;
-        const newY = y + o.y;
-
-        if (
-          newX < 0 ||
-          newX >= COLS ||
-          newY >= ROWS
-        ) {
-          return true;
-        }
-
-        if (
-          newY >= 0 &&
-          board[newY][newX] !== 0
-        ) {
-          return true;
-        }
-      }
-    }
-  }
-
-  return false;
-}
-
-
-// =================================
+// ==========================
 // JUNTAR PEÇA
-// =================================
+// ==========================
 
 function merge() {
 
@@ -238,18 +238,15 @@ function merge() {
         ][
           x + player.pos.x
         ] = value;
-
       }
-
     });
-
   });
 }
 
 
-// =================================
-// QUEDA
-// =================================
+// ==========================
+// DESCER
+// ==========================
 
 function playerDrop() {
 
@@ -270,24 +267,23 @@ function playerDrop() {
 }
 
 
-// =================================
-// MOVIMENTO
-// =================================
+// ==========================
+// MOVER
+// ==========================
 
 function playerMove(dir) {
 
   player.pos.x += dir;
 
   if (collide()) {
-
     player.pos.x -= dir;
   }
 }
 
 
-// =================================
-// ROTAÇÃO
-// =================================
+// ==========================
+// GIRAR
+// ==========================
 
 function rotate(matrix) {
 
@@ -323,7 +319,6 @@ function playerRotate() {
     ) {
 
       player.matrix = oldMatrix;
-
       player.pos.x = oldX;
 
       return;
@@ -332,14 +327,13 @@ function playerRotate() {
 }
 
 
-// =================================
+// ==========================
 // QUEDA RÁPIDA
-// =================================
+// ==========================
 
 function hardDrop() {
 
   while (!collide()) {
-
     player.pos.y++;
   }
 
@@ -355,9 +349,9 @@ function hardDrop() {
 }
 
 
-// =================================
+// ==========================
 // LIMPAR LINHAS
-// =================================
+// ==========================
 
 function clearLines() {
 
@@ -378,7 +372,6 @@ function clearLines() {
     ) {
 
       if (board[y][x] === 0) {
-
         continue outer;
       }
     }
@@ -386,9 +379,7 @@ function clearLines() {
     const row =
       board.splice(y, 1)[0];
 
-    board.unshift(
-      row.fill(0)
-    );
+    board.unshift(row.fill(0));
 
     y++;
 
@@ -415,9 +406,9 @@ function clearLines() {
 }
 
 
-// =================================
+// ==========================
 // VELOCIDADE
-// =================================
+// ==========================
 
 function updateSpeed() {
 
@@ -429,9 +420,9 @@ function updateSpeed() {
 }
 
 
-// =================================
+// ==========================
 // INFORMAÇÕES
-// =================================
+// ==========================
 
 function updateInfo() {
 
@@ -446,27 +437,19 @@ function updateInfo() {
 }
 
 
-// =================================
+// ==========================
 // RANKING
-// =================================
+// ==========================
 
 function saveScore() {
 
   const name =
-    document.getElementById("playerName")
-      .value
-      .trim();
+    document.getElementById("playerName").value.trim();
 
   const playerClass =
-    document.getElementById("playerClass")
-      .value
-      .trim();
+    document.getElementById("playerClass").value.trim();
 
-  if (name === "") {
-    return;
-  }
-
-  if (playerClass === "") {
+  if (!name || !playerClass) {
     return;
   }
 
@@ -497,14 +480,18 @@ function saveScore() {
 }
 
 
-// =================================
+// ==========================
 // MOSTRAR RANKING
-// =================================
+// ==========================
 
 function updateRanking() {
 
   const rankingList =
     document.getElementById("rankingList");
+
+  if (!rankingList) {
+    return;
+  }
 
   rankingList.innerHTML = "";
 
@@ -513,34 +500,36 @@ function updateRanking() {
       localStorage.getItem("tetrisRanking")
     ) || [];
 
-  ranking.forEach((player, index) => {
+  ranking.forEach((item, index) => {
 
     const li =
       document.createElement("li");
 
     li.innerHTML =
       `<strong>${index + 1}º</strong>
-      ${player.name} - ${player.playerClass}
+      ${item.name} - ${item.playerClass}
       <br>
-      🎯 ${player.score} pontos`;
+      🎯 ${item.score} pontos`;
 
     rankingList.appendChild(li);
-
   });
 }
 
 
-// =================================
+// ==========================
 // MÚSICA
-// =================================
+// ==========================
 
 const music =
   document.getElementById("arcadeMusic");
 
 let musicPlaying = false;
 
-
 function toggleMusic() {
+
+  if (!music) {
+    return;
+  }
 
   if (musicPlaying) {
 
@@ -564,21 +553,20 @@ function toggleMusic() {
         ).textContent = "ON";
 
       })
-      .catch(() => {
+      .catch(error => {
 
-        alert(
-          "Não foi possível tocar a música. " +
-          "Verifique se o arquivo arcade.mp3 está na pasta do jogo."
+        console.log(
+          "Erro ao tocar música:",
+          error
         );
-
       });
   }
 }
 
 
-// =================================
+// ==========================
 // REINICIAR
-// =================================
+// ==========================
 
 function restartGame() {
 
@@ -598,9 +586,12 @@ function restartGame() {
   lines = 0;
   level = 1;
 
-  gameOver = false;
+  dropCounter = 0;
+  lastTime = 0;
 
   dropInterval = 1000;
+
+  gameOver = false;
 
   updateInfo();
 
@@ -608,47 +599,41 @@ function restartGame() {
 }
 
 
-// =================================
+// ==========================
 // TECLADO
-// =================================
+// ==========================
 
 document.addEventListener(
   "keydown",
   event => {
 
-    if (gameOver) return;
+    if (gameOver) {
+      return;
+    }
 
     if (event.key === "ArrowLeft") {
 
       playerMove(-1);
 
-    }
-
-    else if (
+    } else if (
       event.key === "ArrowRight"
     ) {
 
       playerMove(1);
 
-    }
-
-    else if (
+    } else if (
       event.key === "ArrowDown"
     ) {
 
       playerDrop();
 
-    }
-
-    else if (
+    } else if (
       event.key === "ArrowUp"
     ) {
 
       playerRotate();
 
-    }
-
-    else if (
+    } else if (
       event.code === "Space"
     ) {
 
@@ -656,14 +641,40 @@ document.addEventListener(
 
       hardDrop();
     }
-
   }
 );
 
 
-// =================================
+// ==========================
+// LOOP DO JOGO
+// ==========================
+
+function update(time = 0) {
+
+  const deltaTime =
+    time - lastTime;
+
+  lastTime = time;
+
+  dropCounter += deltaTime;
+
+  if (
+    !gameOver &&
+    dropCounter > dropInterval
+  ) {
+
+    playerDrop();
+  }
+
+  draw();
+
+  requestAnimationFrame(update);
+}
+
+
+// ==========================
 // INICIAR
-// =================================
+// ==========================
 
 updateRanking();
 

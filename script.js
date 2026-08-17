@@ -57,12 +57,18 @@ let level = 1;
 
 let dropCounter = 0;
 let lastTime = 0;
+
 let gameOver = false;
 
 let dropInterval = 1000;
 
 
+// =================================
+// TABULEIRO
+// =================================
+
 function createBoard() {
+
   return Array.from(
     { length: ROWS },
     () => Array(COLS).fill(0)
@@ -70,13 +76,22 @@ function createBoard() {
 }
 
 
+// =================================
+// CRIAR PEÇA
+// =================================
+
 function createPiece() {
+
   const piece =
     pieces[Math.floor(Math.random() * pieces.length)];
 
   return piece.map(row => [...row]);
 }
 
+
+// =================================
+// RESETAR JOGADOR
+// =================================
 
 function resetPlayer() {
 
@@ -88,15 +103,22 @@ function resetPlayer() {
     Math.floor(COLS / 2) -
     Math.floor(player.matrix[0].length / 2);
 
-if (collide()) {
+  if (collide()) {
 
-  gameOver = true;
+    gameOver = true;
 
-  saveScore();
+    saveScore();
 
-  alert("Game Over! Pontuação: " + score);
+    alert(
+      "Game Over!\nPontuação: " + score
+    );
+  }
 }
 
+
+// =================================
+// DESENHAR
+// =================================
 
 function drawMatrix(matrix, offset) {
 
@@ -132,6 +154,10 @@ function drawMatrix(matrix, offset) {
 }
 
 
+// =================================
+// DESENHAR JOGO
+// =================================
+
 function draw() {
 
   ctx.fillStyle = "#020617";
@@ -155,6 +181,10 @@ function draw() {
 }
 
 
+// =================================
+// COLISÃO
+// =================================
+
 function collide() {
 
   const m = player.matrix;
@@ -164,15 +194,25 @@ function collide() {
 
     for (let x = 0; x < m[y].length; x++) {
 
-      if (
-        m[y][x] !== 0 &&
-        (
-          board[y + o.y] === undefined ||
-          board[y + o.y][x + o.x] !== 0
-        )
-      ) {
+      if (m[y][x] !== 0) {
 
-        return true;
+        const newX = x + o.x;
+        const newY = y + o.y;
+
+        if (
+          newX < 0 ||
+          newX >= COLS ||
+          newY >= ROWS
+        ) {
+          return true;
+        }
+
+        if (
+          newY >= 0 &&
+          board[newY][newX] !== 0
+        ) {
+          return true;
+        }
       }
     }
   }
@@ -180,6 +220,10 @@ function collide() {
   return false;
 }
 
+
+// =================================
+// JUNTAR PEÇA
+// =================================
 
 function merge() {
 
@@ -203,6 +247,10 @@ function merge() {
 }
 
 
+// =================================
+// QUEDA
+// =================================
+
 function playerDrop() {
 
   player.pos.y++;
@@ -222,6 +270,10 @@ function playerDrop() {
 }
 
 
+// =================================
+// MOVIMENTO
+// =================================
+
 function playerMove(dir) {
 
   player.pos.x += dir;
@@ -232,6 +284,10 @@ function playerMove(dir) {
   }
 }
 
+
+// =================================
+// ROTAÇÃO
+// =================================
 
 function rotate(matrix) {
 
@@ -249,9 +305,8 @@ function playerRotate() {
   const oldMatrix = player.matrix;
   const oldX = player.pos.x;
 
-  player.matrix = rotate(
-    player.matrix
-  );
+  player.matrix =
+    rotate(player.matrix);
 
   let offset = 1;
 
@@ -277,6 +332,10 @@ function playerRotate() {
 }
 
 
+// =================================
+// QUEDA RÁPIDA
+// =================================
+
 function hardDrop() {
 
   while (!collide()) {
@@ -295,6 +354,10 @@ function hardDrop() {
   dropCounter = 0;
 }
 
+
+// =================================
+// LIMPAR LINHAS
+// =================================
 
 function clearLines() {
 
@@ -352,6 +415,10 @@ function clearLines() {
 }
 
 
+// =================================
+// VELOCIDADE
+// =================================
+
 function updateSpeed() {
 
   dropInterval =
@@ -361,6 +428,10 @@ function updateSpeed() {
     );
 }
 
+
+// =================================
+// INFORMAÇÕES
+// =================================
 
 function updateInfo() {
 
@@ -375,28 +446,139 @@ function updateInfo() {
 }
 
 
-function update(time = 0) {
+// =================================
+// RANKING
+// =================================
 
-  const deltaTime =
-    time - lastTime;
+function saveScore() {
 
-  lastTime = time;
+  const name =
+    document.getElementById("playerName")
+      .value
+      .trim();
 
-  dropCounter += deltaTime;
+  const playerClass =
+    document.getElementById("playerClass")
+      .value
+      .trim();
 
-  if (
-    !gameOver &&
-    dropCounter > dropInterval
-  ) {
-
-    playerDrop();
+  if (name === "") {
+    return;
   }
 
-  draw();
+  if (playerClass === "") {
+    return;
+  }
 
-  requestAnimationFrame(update);
+  let ranking =
+    JSON.parse(
+      localStorage.getItem("tetrisRanking")
+    ) || [];
+
+  ranking.push({
+    name: name,
+    playerClass: playerClass,
+    score: score
+  });
+
+  ranking.sort(
+    (a, b) => b.score - a.score
+  );
+
+  ranking =
+    ranking.slice(0, 10);
+
+  localStorage.setItem(
+    "tetrisRanking",
+    JSON.stringify(ranking)
+  );
+
+  updateRanking();
 }
 
+
+// =================================
+// MOSTRAR RANKING
+// =================================
+
+function updateRanking() {
+
+  const rankingList =
+    document.getElementById("rankingList");
+
+  rankingList.innerHTML = "";
+
+  const ranking =
+    JSON.parse(
+      localStorage.getItem("tetrisRanking")
+    ) || [];
+
+  ranking.forEach((player, index) => {
+
+    const li =
+      document.createElement("li");
+
+    li.innerHTML =
+      `<strong>${index + 1}º</strong>
+      ${player.name} - ${player.playerClass}
+      <br>
+      🎯 ${player.score} pontos`;
+
+    rankingList.appendChild(li);
+
+  });
+}
+
+
+// =================================
+// MÚSICA
+// =================================
+
+const music =
+  document.getElementById("arcadeMusic");
+
+let musicPlaying = false;
+
+
+function toggleMusic() {
+
+  if (musicPlaying) {
+
+    music.pause();
+
+    musicPlaying = false;
+
+    document.getElementById(
+      "musicStatus"
+    ).textContent = "OFF";
+
+  } else {
+
+    music.play()
+      .then(() => {
+
+        musicPlaying = true;
+
+        document.getElementById(
+          "musicStatus"
+        ).textContent = "ON";
+
+      })
+      .catch(() => {
+
+        alert(
+          "Não foi possível tocar a música. " +
+          "Verifique se o arquivo arcade.mp3 está na pasta do jogo."
+        );
+
+      });
+  }
+}
+
+
+// =================================
+// REINICIAR
+// =================================
 
 function restartGame() {
 
@@ -425,6 +607,10 @@ function restartGame() {
   resetPlayer();
 }
 
+
+// =================================
+// TECLADO
+// =================================
 
 document.addEventListener(
   "keydown",
@@ -475,108 +661,12 @@ document.addEventListener(
 );
 
 
+// =================================
+// INICIAR
+// =================================
+
+updateRanking();
+
 restartGame();
 
 update();
-// ================================
-// SISTEMA DE RANKING
-// ================================
-
-function saveScore() {
-
-  const name =
-    document.getElementById("playerName").value.trim();
-
-  const playerClass =
-    document.getElementById("playerClass").value.trim();
-
-  if (name === "" || playerClass === "") {
-    alert("Digite seu nome e sua turma!");
-    return;
-  }
-
-  let ranking =
-    JSON.parse(localStorage.getItem("tetrisRanking")) || [];
-
-  ranking.push({
-    name: name,
-    playerClass: playerClass,
-    score: score
-  });
-
-  ranking.sort((a, b) => b.score - a.score);
-
-  ranking =
-    ranking.slice(0, 10);
-
-  localStorage.setItem(
-    "tetrisRanking",
-    JSON.stringify(ranking)
-  );
-
-  updateRanking();
-}
-
-
-// ================================
-// MOSTRAR RANKING
-// ================================
-
-function updateRanking() {
-
-  const rankingList =
-    document.getElementById("rankingList");
-
-  rankingList.innerHTML = "";
-
-  let ranking =
-    JSON.parse(localStorage.getItem("tetrisRanking")) || [];
-
-  ranking.forEach((player, index) => {
-
-    const li =
-      document.createElement("li");
-
-    li.innerHTML =
-      `<strong>${index + 1}º</strong> 
-       ${player.name} - ${player.playerClass}
-       <br>
-       🎯 ${player.score} pontos`;
-
-    rankingList.appendChild(li);
-  });
-}
-
-
-// Atualiza o ranking ao abrir o jogo
-updateRanking();
-// ================================
-// MÚSICA
-// ================================
-
-const music =
-  document.getElementById("arcadeMusic");
-
-let musicPlaying = false;
-
-function toggleMusic() {
-
-  if (musicPlaying) {
-
-    music.pause();
-
-    musicPlaying = false;
-
-    document.getElementById("musicStatus")
-      .textContent = "OFF";
-
-  } else {
-
-    music.play();
-
-    musicPlaying = true;
-
-    document.getElementById("musicStatus")
-      .textContent = "ON";
-  }
-}

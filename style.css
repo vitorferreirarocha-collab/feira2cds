@@ -139,4 +139,86 @@ button:hover {
   margin: 8px 0;
   font-size: 14px;
   color: #e2e8f0;
+}.player-form {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.player-form input {
+  width: 145px;
+  padding: 10px;
+  border: 2px solid #475569;
+  border-radius: 8px;
+  background: #1e293b;
+  color: white;
+  font-size: 14px;
+  outline: none;
+}
+
+.player-form input:focus {
+  border-color: #38bdf8;
+}
+
+.player-form input::placeholder {
+  color: #94a3b8;
+}
+
+.music-button {
+  margin-top: 10px;
+  background: #a855f7;
+  color: white;
+}
+
+.music-button:hover {
+  background: #c084fc;
+}
+
+.ranking {
+  margin-top: 20px;
+  padding: 15px;
+  background: #1e293b;
+  border-radius: 10px;
+}
+
+.ranking h2 {
+  margin-top: 0;
+  text-align: center;
+  color: #facc15;
+  font-size: 20px;
+}
+
+.ranking ol {
+  padding-left: 25px;
+  margin-bottom: 0;
+}
+
+.ranking li {
+  margin: 10px 0;
+  font-size: 13px;
+  color: #e2e8f0;
+}
+
+@media (max-width: 600px) {
+
+  .game {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .side {
+    width: 300px;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+
+  .player-form {
+    flex-direction: column;
+  }
+
+  .player-form input {
+    width: 300px;
+  }
 }

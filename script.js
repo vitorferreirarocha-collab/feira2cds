@@ -731,3 +731,39 @@ updateRanking();
 restartGame();
 
 update();
+function startGame() {
+
+  document.getElementById("startScreen").style.display = "none";
+
+  restartGame();
+
+  // Música começa quando o jogador clicar em JOGAR
+  if (music && !musicPlaying) {
+
+    music.play()
+      .then(() => {
+
+        musicPlaying = true;
+
+        document.getElementById(
+          "musicStatus"
+        ).textContent = "ON";
+
+      })
+      .catch(() => {
+        console.log("Música bloqueada pelo navegador.");
+      });
+  }
+}
+
+
+function showRanking() {
+
+  alert(
+    "O ranking está disponível dentro do jogo!"
+  );
+}updateRanking();
+
+restartGame();
+
+update();
